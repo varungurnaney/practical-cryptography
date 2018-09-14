@@ -1,11 +1,40 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"os"
+	"regexp"
+	"strings"
 )
 
+func encrpytVigenere(data string, key string) {
+
+	var encipherKeyASCII = make([]int, len(key), len(key))
+
+	var plaintextASCII = make([]int, len(data), len(data))
+
+	for i := 0; i < len(key); i++ {
+		encipherKeyASCII[i] = int(key[i])
+	}
+
+	for j := 0; j < len(data); j++ {
+		for k := 0; k < len(key); k++ {
+
+			if (j % len(key)) == k {
+				plaintextASCII[j] = (((int(data[j]) - 65) + (encipherKeyASCII[k] - 65)) % 26) + 65
+			}
+		}
+	}
+
+	var buffer bytes.Buffer
+	for x := 0; x < len(plaintextASCII); x++ {
+		buffer.WriteString(string(plaintextASCII[x]))
+	}
+	fmt.Println(buffer.String())
+
+}
 func checkReadFile(e error) {
 	if e != nil {
 		panic(e)
@@ -29,6 +58,17 @@ func main() {
 		/* open and read plaintext file */
 		data, err := ioutil.ReadFile(plaintextFile)
 		checkReadFile(err)
+		fmt.Print(len(string(data)))
+
+		/* Convert String to Uppercase*/
+		upperKey := strings.ToUpper(string(key))
+		fmt.Print("Key being used (in uppercase): " + upperKey + "\n")
+
+		/* keep only a-zA-Z in plaintext file lext */
+		regexExpr := regexp.MustCompile("[^[:alpha:]]")
+		newData := regexExpr.ReplaceAllLiteralString(strings.ToUpper(string(data)), "")
+
+		encrpytVigenere(newData, upperKey)
 
 	}
 }
