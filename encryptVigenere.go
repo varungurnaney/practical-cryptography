@@ -53,16 +53,16 @@ func main() {
 		}
 
 		plaintextFile := os.Args[2]
-		fmt.Println("Plaintext file being used: " + plaintextFile)
+		//fmt.Println("Plaintext file being used: " + plaintextFile)
 
 		/* open and read plaintext file */
 		data, err := ioutil.ReadFile(plaintextFile)
 		checkReadFile(err)
-		fmt.Print(len(string(data)))
+		//fmt.Print(len(string(data)))
 
 		/* Convert String to Uppercase*/
 		upperKey := strings.ToUpper(string(key))
-		fmt.Print("Key being used (in uppercase): " + upperKey + "\n")
+		//fmt.Print("Key being used (in uppercase): " + upperKey + "\n")
 
 		/* keep only a-zA-Z in plaintext file lext */
 		regexExpr := regexp.MustCompile("[^[:alpha:]]")

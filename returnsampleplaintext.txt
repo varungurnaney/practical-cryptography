@@ -1,0 +1,3 @@
+Plaintext file being used: samplecipher.txt
+18Key being used (in uppercase): ABA
+THISISASAMPLETEXT
