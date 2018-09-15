@@ -28,7 +28,7 @@ func encrpytVigenere(data string, key string) {
 		}
 	}
 
-	var buffer bytes.Buffer
+	var buffer bytes.Buffergit
 	for x := 0; x < len(plaintextASCII); x++ {
 		buffer.WriteString(string(plaintextASCII[x]))
 	}
