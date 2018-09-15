@@ -9,10 +9,19 @@ import (
 	"strings"
 )
 
+func ASCIItoString(plaintextASCII []int) {
+
+	var output bytes.Buffer
+	for index, _ := range plaintextASCII {
+		output.WriteString(string(plaintextASCII[index]))
+	}
+	fmt.Println(output.String())
+
+}
+
 func encrpytVigenere(data string, key string) {
 
 	var encipherKeyASCII = make([]int, len(key), len(key))
-
 	var plaintextASCII = make([]int, len(data), len(data))
 
 	for i := 0; i < len(key); i++ {
@@ -28,11 +37,7 @@ func encrpytVigenere(data string, key string) {
 		}
 	}
 
-	var buffer bytes.Buffer
-	for x := 0; x < len(plaintextASCII); x++ {
-		buffer.WriteString(string(plaintextASCII[x]))
-	}
-	fmt.Println(buffer.String())
+	ASCIItoString(plaintextASCII[:])
 
 }
 func checkReadFile(e error) {

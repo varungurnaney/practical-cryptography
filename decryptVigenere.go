@@ -9,12 +9,20 @@ import (
 	"strings"
 )
 
+func ASCIItoString(plaintextASCII []int) {
+
+	var output bytes.Buffer
+	for index, _ := range plaintextASCII {
+		output.WriteString(string(plaintextASCII[index]))
+	}
+	fmt.Println(output.String())
+
+}
+
 func decrpytVigenere(data string, key string) {
 
 	var encipherKeyASCII = make([]int, len(key), len(key))
-
 	var plaintextASCII = make([]int, len(data), len(data))
-
 	var tempVar = 0
 
 	for i := 0; i < len(key); i++ {
@@ -34,11 +42,7 @@ func decrpytVigenere(data string, key string) {
 		}
 	}
 
-	var buffer bytes.Buffer
-	for x := 0; x < len(plaintextASCII); x++ {
-		buffer.WriteString(string(plaintextASCII[x]))
-	}
-	fmt.Println(buffer.String())
+	ASCIItoString(plaintextASCII[:])
 
 }
 
