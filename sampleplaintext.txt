@@ -1,2 +1,1 @@
-This is a sample text of my class
-
+<script> alert(1) </script>

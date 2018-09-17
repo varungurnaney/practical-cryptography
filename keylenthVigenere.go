@@ -1,105 +1,85 @@
-// vigenere-keylength <ciphertext-filename>
-
 package main
 
 import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"regexp"
 	"sort"
+	"strings"
 )
-
-func showUsage() {
-	fmt.Print("\n* Vigenere Keylength Guessing Tool *\n\n")
-	fmt.Print("A tool for guessing the keylength of vigenere cipher given the ciphertext.\n")
-	fmt.Print("usage: vigenere-keylength <ciphertext-filename>\n\n")
-}
 
 func check(e error) {
 	if e != nil {
-		showUsage()
 		panic(e)
 	}
 }
 
-func sanitize(ip string) string {
-	op := []rune{}
-	for _, v := range ip {
-		if 65 <= v && v <= 90 {
-			op = append(op, v)
-		} else if 97 <= v && v <= 122 {
-			op = append(op, v-32)
-		}
-	}
-	return string(op)
-}
-
-func getIndex(ctr []int, l int, v int) int {
-	j := 0
-	for j := 0; j < l; j++ {
-		if ctr[j] == v {
-			return j
-		}
-	}
-	return j
-}
-
-func gcd(x int, y int) int {
-	var n int
-	for j := 1; j <= x && j <= y; j++ {
-		if x%j == 0 && y%j == 0 {
-			n = j
-		}
-	}
-	return n
-}
-
-func guessKeyLength(cipherText string) int {
-	cipherLen := len(cipherText)
-	var ctr []int
-	var sortedCtr []int
-	maxKeyLen := 100
-	ctr = make([]int, maxKeyLen, maxKeyLen)
-	for i := 1; i < maxKeyLen; i++ {
-		for j := 0; j < cipherLen; j++ {
-			if (j + i) >= cipherLen {
+func determineKeyLength(cipherData string) int {
+	var counter = make([]int, 100, 100)
+	for i := 1; i < 100; i++ {
+		for j := 0; j < len(cipherData); j++ {
+			if (j + i) >= len(cipherData) {
 				break
 			}
-			x := string(cipherText[j])
-			y := string(cipherText[j+i])
-			if x == y {
-				ctr[i] += 1
+			temp1 := string(cipherData[j])
+			temp2 := string(cipherData[j+i])
+			if temp1 == temp2 {
+				counter[i]++
 			}
 		}
 	}
-	ctrLen := len(ctr)
-	sortedCtr = make([]int, ctrLen, ctrLen)
-	for j := 0; j < ctrLen; j++ {
-		sortedCtr[j] = ctr[j]
+	var sCounter = make([]int, len(counter), len(counter))
+	for index := range counter {
+		sCounter[index] = counter[index]
 	}
-	sort.Ints(sortedCtr)
-	index := make([]int, 4, 4)
+	/*for j := 0; j < len(counter); j++ {
+		sCounter[j] = counter[j]
+	}*/
+	sort.Ints(sCounter)
+	arr := make([]int, 4, 4)
 	for j := 0; j < 4; j++ {
-		index[j] = getIndex(ctr, ctrLen, sortedCtr[len(ctr)-(j+1)])
+		arr[j] = getIndex(counter, len(counter), sCounter[len(counter)-(j+1)])
 	}
-	keyLen := gcd(gcd(index[0], index[1]), gcd(index[2], index[3]))
-	if keyLen == 1 {
-		sort.Ints(index)
-		keyLen = index[0] + 1
+	finalKeySize := hcf(hcf(arr[0], arr[1]), hcf(arr[2], arr[3]))
+	if finalKeySize == 1 {
+		sort.Ints(arr)
+		finalKeySize = arr[0] + 1
 	}
-	return keyLen
+	return finalKeySize
+}
+
+func getIndex(counter []int, len int, val int) int {
+	i := 0
+	for i := 0; i < len; i++ {
+		if counter[i] == val {
+			return i
+		}
+	}
+	return i
+}
+
+func hcf(num1 int, num2 int) int {
+	var a int
+	for i := 1; i <= num1 && i <= num2; i++ {
+		if num1%i == 0 && num2%i == 0 {
+			a = i
+		}
+	}
+	return a
 }
 
 func main() {
 	if len(os.Args) < 2 {
-		showUsage()
-		os.Exit(1)
+		fmt.Print("usage: vigenere-keylength <ciphertext-filename>\n\n")
+	} else {
+		cipherData, err := ioutil.ReadFile(os.Args[1])
+		check(err)
+		regexExpr := regexp.MustCompile("[^[:alpha:]]")
+		newData := regexExpr.ReplaceAllLiteralString(strings.ToUpper(string(cipherData)), "")
+
+		//fmt.Print("\nKEY: " + skey)
+		keyLength := determineKeyLength(newData)
+		fmt.Print("\n The  Key Length: ", keyLength, "\n\n")
 	}
-	cipherTextFile, err := ioutil.ReadFile(os.Args[1])
-	check(err)
-	cipherText := sanitize(string(cipherTextFile))
-	//fmt.Print("\nKEY: " + skey)
-	fmt.Print("\nCiphertext:\t" + cipherText)
-	keyLength := guessKeyLength(cipherText)
-	fmt.Print("\nPredicted Key Length: ", keyLength, "\n\n")
 }
